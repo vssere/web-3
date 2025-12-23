@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS attempts (
+    id BIGSERIAL PRIMARY KEY,
+    x DOUBLE PRECISION NOT NULL,
+    y DOUBLE PRECISION NOT NULL,
+    r DOUBLE PRECISION NOT NULL,
+    result BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    execution_time BIGINT
+);
+
+CREATE INDEX IF NOT EXISTS idx_attempts_created_at ON attempts(created_at DESC);
