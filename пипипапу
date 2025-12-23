@@ -1,1 +1,11 @@
-блабла
+запуск wildfly
+
+cd /c/wildfly-26.1.3.Final/bin
+./standalone.bat
+
+тоннель на гелиусе 
+ssh -L 5432:pg:5432 -p 2222 s467432@helios.cs.ifmo.ru
+
+компиляция
+./gradlew.bat clean war
+cp build/libs/lab3.war /c/wildfly-26.1.3.Final/standalone/deployments/
