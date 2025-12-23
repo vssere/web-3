@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'ru.rmntim'
+version = '1.0-SNAPSHOT'
+description = 'Web Programming Lab 3 - Java EE 8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ✅ Java EE 8 API (для WildFly)
+    compileOnly 'javax:javaee-api:8.0'
+
+    // ✅ JSF (Mojarra) - РЕАЛИЗАЦИЯ
+    implementation 'com.sun.faces:jsf-api:2.2.20'
+    implementation 'com.sun.faces:jsf-impl:2.2.20'
+
+    // ✅ PrimeFaces 8.0 (совместим с Java EE 8)
+    implementation 'org.primefaces:primefaces:8.0'
+
+    // ✅ PostgreSQL Driver (чиcтый JDBC!)
+    implementation 'org.postgresql:postgresql:42.6.0'
+
+    // ✅ CDI API
+    implementation 'javax.enterprise:cdi-api:2.0'
+
+    // ✅ JSTL
+    implementation 'javax.servlet:jstl:1.2'
+}
+
+war {
+    archiveFileName = 'lab3.war'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters'] // Важно для CDI!
+}
