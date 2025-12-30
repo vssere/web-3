@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <title>Тест JSF</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</h:head>
+<h:body>
+    <h1>Тест работоспособности JSF</h1>
+
+    <div style="border: 2px solid blue; padding: 15px; margin: 20px 0;">
+        <h3>Проверка EL выражений:</h3>
+        <p class="success">✅ testBean.elTest: #{testBean.elTest}</p>
+        <p class="success">✅ clockBean.currentTime: #{clockBean.currentTime}</p>
+        <p class="success">✅ clockBean.currentDate: #{clockBean.currentDate}</p>
+    </div>
+
+    <h3>Проверка формы:</h3>
+    <h:form>
+        Введите текст:
+        <h:inputText value="#{testBean.text}" />
+        <h:commandButton value="Отправить" action="#{testBean.submit}" />
+        <br/>
+        <p>Результат: <strong>#{testBean.message}</strong></p>
+    </h:form>
+
+    <hr/>
+
+    <h3>Проверка AttemptRepository:</h3>
+    <p>Количество попыток: #{attemptRepository.attemptCount}</p>
+    <h:commandButton value="Добавить тестовую попытку"
+                     action="#{attemptRepository.addAttemptFromBean}" />
+
+    <br/><br/>
+    <h:link value="← Вернуться на главную" outcome="index.xhtml" />
+</h:body>
+</html>

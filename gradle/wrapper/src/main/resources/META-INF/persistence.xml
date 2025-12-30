@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://javax.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://javax.ee/xml/ns/persistence
+             https://javax.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+    <persistence-unit name="lab3PU" transaction-type="RESOURCE_LOCAL">
+        <!-- Временная конфигурация без БД -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.schema-generation.database.action" value="none"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

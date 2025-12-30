@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Лабораторная работа 3</title>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #6A0DAD 0%, #9370DB 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #6A0DAD;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #6A0DAD;
+            margin: 0;
+        }
+        .student-info {
+            background: #6A0DAD;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .clock-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        .digital-clock {
+            font-size: 2em;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            margin: 15px 0;
+        }
+        .nav-button {
+            display: block;
+            width: 300px;
+            margin: 30px auto;
+            padding: 15px;
+            background: linear-gradient(135deg, #6A0DAD, #9370DB);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+        }
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 13, 173, 0.6);
+        }
+        .info-box {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .info-box h3 {
+            color: #1565C0;
+            margin-top: 0;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 WEB-программирование</h1>
+            <h2>Лабораторная работа №3</h2>
+        </div>
+
+        <div class="student-info">
+            <h3 style="margin: 0; color: #FFD700;">Середа Вероника Сергеевна</h3>
+            <p style="margin: 5px 0;">Группа: P3212 | Вариант: 470354 | ИСУ: 467432</p>
+        </div>
+
+        <!-- Часы -->
+        <!-- Часы -->
+        <div class="clock-section">
+            <h2 style="color: #6A0DAD;">🕒 Текущее время</h2>
+
+            <div class="digital-clock" style="font-size: 1.8em; font-family: 'Courier New'; padding: 15px;">
+                <h:panelGroup id="clockPanel">
+                    📅 Дата: <strong>#{clockBean.currentDate}</strong><br/>
+                    🕐 Время: <strong>#{clockBean.currentTime}</strong>
+                </h:panelGroup>
+
+                <!-- Вместо PrimeFaces poll используем meta refresh -->
+                <meta http-equiv="refresh" content="12" />
+            </div>
+
+            <!-- Аналоговые часы -->
+            <canvas id="analogClock" width="180" height="180"
+                    style="display: block; margin: 15px auto; background: white;
+                   border-radius: 50%; border: 3px solid #6A0DAD;"></canvas>
+
+            <!-- Обновление каждые 12 секунд -->
+            <p:poll interval="12" update="clockPanel" />
+
+            <p style="color: #666; font-size: 0.9em;">
+                <small>⏱️ Часы обновляются каждые 12 секунд</small>
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 Область проверки</h3>
+            <p>Область формируется из трех частей:<br/>
+                1. Четверть круга (левый верхний квадрант)<br/>
+                2. Треугольник (правый верхний квадрант)<br/>
+                3. Прямоугольник (левый нижний квадрант)</p>
+        </div>
+
+        <div class="info-box">
+            <h3>⚙️ Технологии</h3>
+            <p>Java EE 8, JSF 2.2, PrimeFaces 8.0, PostgreSQL, WildFly 26</p>
+        </div>
+
+        <h:form>
+            <h:commandButton value="🚀 Перейти к проверке точек"
+                             action="main"
+                             styleClass="nav-button" />
+        </h:form>
+
+        <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9em;">
+            <p>© 2025 Лабораторная работа по WEB-программированию</p>
+            <p>Университет ИТМО | Факультет ПИиКТ</p>
+        </div>
+    </div>
+    <!-- Скрипт для аналоговых часов -->
+    <script>
+        function drawAnalogClock() {
+            const canvas = document.getElementById('analogClock');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.height / 2;
+
+            // Очищаем
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Перемещаем в центр
+            ctx.translate(radius, radius);
+            radius = radius * 0.9;
+
+            // Циферблат
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#6A0DAD';
+            ctx.stroke();
+
+            // Цифры
+            ctx.font = radius * 0.15 + 'px Arial';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#333';
+
+            for (let num = 1; num &lt;= 12; num++) {
+                const ang = num * Math.PI / 6;
+                ctx.rotate(ang);
+                ctx.translate(0, -radius * 0.85);
+                ctx.rotate(-ang);
+                ctx.fillText(num.toString(), 0, 0);
+                ctx.rotate(ang);
+                ctx.translate(0, radius * 0.85);
+                ctx.rotate(-ang);
+            }
+
+            // Текущее время
+            const now = new Date();
+            const hour = now.getHours() % 12;
+            const minute = now.getMinutes();
+            const second = now.getSeconds();
+
+            // Часовая стрелка
+            ctx.lineWidth = radius * 0.07;
+            ctx.strokeStyle = '#333';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.rotate((hour + minute/60) * Math.PI / 6);
+            ctx.lineTo(0, -radius * 0.5);
+            ctx.stroke();
+            ctx.rotate(-(hour + minute/60) * Math.PI / 6);
+
+            // Минутная стрелка
+            ctx.lineWidth = radius * 0.05;
+            ctx.strokeStyle = '#666';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.rotate((minute + second/60) * Math.PI / 30);
+            ctx.lineTo(0, -radius * 0.8);
+            ctx.stroke();
+            ctx.rotate(-(minute + second/60) * Math.PI / 30);
+
+            // Секундная стрелка
+            ctx.lineWidth = radius * 0.02;
+            ctx.strokeStyle = '#FF6B6B';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.rotate(second * Math.PI / 30);
+            ctx.lineTo(0, -radius * 0.9);
+            ctx.stroke();
+
+            // Центр
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+            ctx.fillStyle = '#6A0DAD';
+            ctx.fill();
+
+            // Сброс
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+
+        // Запуск часов
+        document.addEventListener('DOMContentLoaded', function() {
+            drawAnalogClock();
+            // Обновляем каждую секунду
+            setInterval(drawAnalogClock, 1000);
+        });
+    </script>
+    <!-- Скрипт для аналоговых часов -->
+    <script>
+        function drawAnalogClock() {
+            const canvas = document.getElementById('analogClock');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.height / 2;
+
+            // Очищаем
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Сохраняем трансформацию
+            ctx.save();
+
+            // Перемещаем в центр
+            ctx.translate(radius, radius);
+
+            // Уменьшаем радиус для отступов
+            const drawRadius = radius * 0.85;
+
+            // Циферблат
+            ctx.beginPath();
+            ctx.arc(0, 0, drawRadius, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#6A0DAD';
+            ctx.stroke();
+
+            // Цифры
+            ctx.font = (drawRadius * 0.15) + 'px Arial';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#333';
+
+            for (let num = 1; num &lt;= 12; num++) {
+                const ang = (num * Math.PI) / 6;
+                ctx.rotate(ang);
+                ctx.translate(0, -drawRadius * 0.75);
+                ctx.rotate(-ang);
+                ctx.fillText(num.toString(), 0, 0);
+                ctx.rotate(ang);
+                ctx.translate(0, drawRadius * 0.75);
+                ctx.rotate(-ang);
+            }
+
+            // Текущее время
+            const now = new Date();
+            const hour = now.getHours() % 12;
+            const minute = now.getMinutes();
+            const second = now.getSeconds();
+
+            // Часовая стрелка
+            ctx.rotate(((hour * 30) + (minute * 0.5)) * (Math.PI / 180));
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -drawRadius * 0.5);
+            ctx.lineWidth = drawRadius * 0.07;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            ctx.rotate(-((hour * 30) + (minute * 0.5)) * (Math.PI / 180));
+
+            // Минутная стрелка
+            ctx.rotate((minute * 6) * (Math.PI / 180));
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -drawRadius * 0.8);
+            ctx.lineWidth = drawRadius * 0.05;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#666';
+            ctx.stroke();
+            ctx.rotate(-(minute * 6) * (Math.PI / 180));
+
+            // Секундная стрелка
+            ctx.rotate((second * 6) * (Math.PI / 180));
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -drawRadius * 0.9);
+            ctx.lineWidth = drawRadius * 0.02;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#FF6B6B';
+            ctx.stroke();
+            ctx.rotate(-(second * 6) * (Math.PI / 180));
+
+            // Центральная точка
+            ctx.beginPath();
+            ctx.arc(0, 0, drawRadius * 0.05, 0, Math.PI * 2);
+            ctx.fillStyle = '#6A0DAD';
+            ctx.fill();
+
+            // Восстанавливаем трансформацию
+            ctx.restore();
+        }
+
+        // Запуск часов при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            drawAnalogClock();
+            // Обновляем каждую секунду
+            setInterval(drawAnalogClock, 1000);
+        });
+    </script>
+</h:body>
+</html>

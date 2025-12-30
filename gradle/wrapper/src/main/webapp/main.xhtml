@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Проверка попадания точки</title>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #6A0DAD 0%, #9370DB 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #6A0DAD;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #6A0AD;
+            margin: 0 0 10px 0;
+        }
+        .student-info {
+            background: #6A0DAD;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-left: 20px;
+            color: #6A0DAD;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-back:hover {
+            text-decoration: underline;
+        }
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .form-section {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        .graph-section {
+            flex: 2;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        .form-section h2, .graph-section h2 {
+            color: #6A0DAD;
+            margin-top: 0;
+            border-bottom: 2px solid #6A0DAD;
+            padding-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #6A0DAD;
+            box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-primary {
+            background: #6A0DAD;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a0c9d;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        #graphCanvas {
+            border: 3px solid #6A0DAD;
+            border-radius: 8px;
+            background: white;
+            cursor: crosshair;
+        }
+        .table-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        .table-section h2 {
+            color: #6A0DAD;
+            margin-top: 0;
+            border-bottom: 2px solid #6A0DAD;
+            padding-bottom: 15px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .data-table th {
+            background: #6A0DAD;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        .data-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .data-table tr:hover {
+            background: #f0f0f0;
+        }
+        .hit {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .miss {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <h1>🎯 Проверка попадания точки в область</h1>
+            <div class="student-info">
+                <strong>Середа Вероника Сергеевна</strong> |
+                Группа: P3212 | Вариант: 470354 | ИСУ: 467432
+            </div>
+            <h:link outcome="index.xhtml" value="← Вернуться на стартовую страницу" styleClass="nav-back" />
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Левая часть: Форма -->
+            <div class="form-section">
+                <h2>📝 Ввод координат</h2>
+
+                <h:form id="pointForm">
+                    <!-- X координата -->
+                    <div class="form-group">
+                        <h:outputLabel for="x" value="Координата X:" styleClass="form-label" />
+                        <h:selectOneMenu id="x" value="#{attempt.x}" styleClass="form-control">
+                            <f:selectItem itemLabel="Выберите X" itemValue="" />
+                            <f:selectItem itemValue="-2.0" itemLabel="-2.0" />
+                            <f:selectItem itemValue="-1.5" itemLabel="-1.5" />
+                            <f:selectItem itemValue="-1.0" itemLabel="-1.0" />
+                            <f:selectItem itemValue="-0.5" itemLabel="-0.5" />
+                            <f:selectItem itemValue="0.0" itemLabel="0.0" />
+                            <f:selectItem itemValue="0.5" itemLabel="0.5" />
+                            <f:selectItem itemValue="1.0" itemLabel="1.0" />
+                            <f:selectItem itemValue="1.5" itemLabel="1.5" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <!-- Y координата -->
+                    <div class="form-group">
+                        <h:outputLabel for="y" value="Координата Y (-3 до 3):" styleClass="form-label" />
+                        <h:inputText id="y" value="#{attempt.y}" styleClass="form-control" />
+                    </div>
+
+                    <!-- R радиус -->
+                    <div class="form-group">
+                        <h:outputLabel for="r" value="Радиус R:" styleClass="form-label" />
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <h:selectOneRadio id="r" value="#{attempt.r}" layout="pageDirection">
+                                <f:selectItem itemValue="1" itemLabel="1" />
+                                <f:selectItem itemValue="2" itemLabel="2" />
+                                <f:selectItem itemValue="3" itemLabel="3" />
+                                <f:selectItem itemValue="4" itemLabel="4" />
+                                <f:selectItem itemValue="5" itemLabel="5" />
+                            </h:selectOneRadio>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="button-group">
+                        <h:commandButton value="✅ Проверить"
+                                         action="#{attemptRepository.addAttemptFromBean()}"
+                                         styleClass="btn btn-primary" />
+
+                        <h:commandButton value="🗑️ Очистить"
+                                         action="#{attemptRepository.clearAttempts()}"
+                                         styleClass="btn btn-danger"
+                                         onclick="return confirm('Очистить историю проверок?')" />
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Правая часть: График -->
+            <div class="graph-section">
+                <h2>📈 График области</h2>
+                <canvas id="graphCanvas" width="500" height="500"></canvas>
+                <p style="color: #666; margin-top: 15px;">💡 Кликните на графике для добавления точки</p>
+            </div>
+        </div>
+
+        <!-- Таблица результатов -->
+        <div class="table-section">
+            <h2>📊 История проверок</h2>
+
+            <h:dataTable value="#{attemptRepository.latestAttemptsList}"
+                         var="attemptItem"
+                         styleClass="data-table"
+                         headerClass="table-header"
+                         rowClasses="table-row-odd, table-row-even">
+
+                <h:column>
+                    <f:facet name="header">X</f:facet>
+                    #{attemptItem.x}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Y</f:facet>
+                    #{attemptItem.y}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">R</f:facet>
+                    #{attemptItem.r}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Результат</f:facet>
+                    <span style="color: #{attemptItem.result ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                        #{attemptItem.result ? '🎯 Попадание' : '❌ Промах'}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Время</f:facet>
+                    <h:outputText value="#{attemptItem.createdAt}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
+                    </h:outputText>
+                </h:column>
+
+            </h:dataTable>
+
+            <h:outputText value="Пока нет проверок. Добавьте первую точку!"
+                          rendered="#{empty attemptRepository.latestAttemptsList}"
+                          style="display: block; text-align: center; padding: 30px; color: #666; font-size: 18px;" />
+        </div>
+    </div>
+
+    <!-- ПРОСТОЙ и РАБОЧИЙ JavaScript для графика -->
+    <script><![CDATA[
+        // Ждём полной загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== ЗАГРУЗКА ГРАФИКА ===');
+
+            // Находим canvas
+            var canvas = document.getElementById('graphCanvas');
+            if (!canvas) {
+                console.error('❌ Canvas не найден!');
+                return;
+            }
+
+            console.log('✅ Canvas найден: ' + canvas.width + 'x' + canvas.height);
+
+            var ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('❌ Контекст canvas не получен!');
+                return;
+            }
+
+            // Параметры
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+            var scale = 40; // пикселей на единицу
+            var currentR = 2; // значение по умолчанию
+
+            // ===== ФУНКЦИЯ РИСОВАНИЯ ГРАФИКА =====
+            function drawGraph() {
+                console.log('🎨 Рисуем график...');
+
+                // 1. Очищаем canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 2. Белый фон
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 3. Рисуем сетку (светло-серая)
+                ctx.strokeStyle = '#f0f0f0';
+                ctx.lineWidth = 1;
+
+                // Вертикальные линии
+                for (var i = -5; i <= 5; i++) {
+                    var x = centerX + i * scale;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+
+                // Горизонтальные линии
+                for (var i = -5; i <= 5; i++) {
+                    var y = centerY - i * scale;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                // 4. Рисуем оси координат (чёрные)
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+
+                // Ось X
+                ctx.beginPath();
+                ctx.moveTo(0, centerY);
+                ctx.lineTo(canvas.width, centerY);
+                ctx.stroke();
+
+                // Ось Y
+                ctx.beginPath();
+                ctx.moveTo(centerX, 0);
+                ctx.lineTo(centerX, canvas.height);
+                ctx.stroke();
+
+                // 5. Рисуем область попадания (сиреневая)
+                if (currentR > 0) {
+                    ctx.fillStyle = 'rgba(147, 112, 219, 0.3)';
+                    ctx.strokeStyle = '#6A0DAD';
+                    ctx.lineWidth = 2;
+
+                    // 5.1 Левый верхний прямоугольник (-R/2 до 0, 0 до R)
+                    ctx.beginPath();
+                    ctx.rect(centerX, centerY - currentR * scale,
+                            -(currentR/2) * scale, -currentR * scale);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // 5.2 Правый верхний четверть круга радиусом R
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, currentR * scale, 0, Math.PI / 2, false);
+                    ctx.lineTo(centerX, centerY);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // 5.3 Левый нижний треугольник
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(centerX - currentR * scale, centerY);
+                    ctx.lineTo(centerX, centerY + (currentR/2) * scale);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // 6. Подпись графика
+                ctx.fillStyle = '#6A0DAD';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('График области (R = ' + currentR + ')', centerX, 30);
+
+                console.log('✅ График нарисован');
+            }
+
+            // ===== ОБРАБОТКА КЛИКА ПО ГРАФИКУ =====
+            canvas.onclick = function(event) {
+                // Получаем координаты клика
+                var rect = canvas.getBoundingClientRect();
+                var clickX = event.clientX - rect.left;
+                var clickY = event.clientY - rect.top;
+
+                // Преобразуем в математические координаты
+                var mathX = ((clickX - centerX) / scale).toFixed(2);
+                var mathY = ((centerY - clickY) / scale).toFixed(2);
+
+                console.log('🎯 Клик на графике: X=' + mathX + ', Y=' + mathY);
+
+                // Рисуем точку на графике
+                ctx.fillStyle = '#4CAF50'; // зелёный цвет
+                ctx.beginPath();
+                ctx.arc(clickX, clickY, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Обводим точку
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Показываем сообщение
+                alert('✅ Точка добавлена!\n\n' +
+                      'Координаты:\n' +
+                      'X = ' + mathX + '\n' +
+                      'Y = ' + mathY + '\n' +
+                      'R = ' + currentR + '\n\n' +
+                      'Для проверки нажмите "✅ Проверить" в форме');
+            };
+
+            // ===== ОБНОВЛЕНИЕ ГРАФИКА ПРИ ИЗМЕНЕНИИ R =====
+            var radioButtons = document.querySelectorAll('input[name="pointForm:r"]');
+            for (var i = 0; i < radioButtons.length; i++) {
+                radioButtons[i].addEventListener('change', function() {
+                    if (this.checked) {
+                        currentR = parseFloat(this.value);
+                        console.log('🔄 Радиус изменён: R = ' + currentR);
+                        drawGraph();
+                    }
+                });
+            }
+
+            // ===== ПЕРВОНАЧАЛЬНАЯ ОТРИСОВКА =====
+            drawGraph();
+            canvas.style.cursor = 'crosshair';
+
+            console.log('✅ График полностью инициализирован и готов к работе!');
+        });
+    ]]></script>
+</h:body>
+</html>
