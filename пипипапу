@@ -3,9 +3,18 @@
 cd /c/wildfly-26.1.3.Final/bin
 ./standalone.bat
 
-тоннель на гелиусе 
-ssh -L 5432:pg:5432 -p 2222 s467432@helios.cs.ifmo.ru
-
 компиляция
 ./gradlew.bat clean war
 cp build/libs/lab3.war /c/wildfly-26.1.3.Final/standalone/deployments/
+
+тоннель на гелиусе 
+ssh -L 5432:pg:5432 -p 2222 s467432@helios.cs.ifmo.ru
+
+запуск wildfly
+bash lab3/wildfly/bin/standalone.sh
+
+копировать
+scp -P 2222 build/libs/lab3.war s467432@helios.cs.ifmo.ru:~lab3/wildfly/standalone/deployments/
+
+где лежит
+http://localhost:14203/lab3/
